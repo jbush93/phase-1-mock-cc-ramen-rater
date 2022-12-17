@@ -8,7 +8,7 @@ const rName = document.querySelector('.name')
 const restaurant = document.querySelector('.restaurant')
 const rRating = document.querySelector('#rating-display')
 const rComment = document.querySelector('#comment-display')
-let currentRamen
+let currentRamen = -1
 
 
 function fetchAll()
@@ -21,16 +21,13 @@ function fetchAll()
         .then(function (data)
         {
             console.log(data)
+            currentRamen = data[0].id
+            console.log(currentRamen)
             data.map(function (ramenData)
             {
                 console.log(ramenData)
-                // console.log(ramenData)
-                // detailImg.src = ramenData.image
-                // rName.innerText = ramenData.name
-                // restaurant.innerText = ramenData.restaurant
-                // rRating.innerText = ramenData.rating
-                // rComment.innerText = ramenData.comment
                 renderData(ramenData)
+
             })
         })
 }
@@ -51,6 +48,7 @@ function renderData(ramenData)
     h3.innerText = ramenData.restaurant
     h3.className = 'restaurant'
     btn.innerText = 'delete'
+    btn.id = ramenData.id
 
     detailImg.src = ramenData.image
     rName.innerText = ramenData.name
@@ -68,17 +66,32 @@ function renderData(ramenData)
     img.addEventListener('click', function (evt)
     {
         console.log(evt.target)
+        console.log(evt.target.id)
         detailImg.src = ramenData.image
         rName.innerText = ramenData.name
         restaurant.innerText = ramenData.restaurant
         rRating.innerText = ramenData.rating
         rComment.innerText = ramenData.comment
+        currentRamen = ramenData.id
+        console.log(currentRamen)
     })
 
     btn.addEventListener('click', function (evt)
     {
         evt.preventDefault()
+        btnId = evt.target.id
         evt.target.parentNode.remove();
+        fetch(`${url}/${btnId}`, {
+            method: 'DELETE'
+        })
+            .then(function (res)
+            {
+                return res.json()
+            })
+            .then(function (data)
+            {
+                console.log(data)
+            })
     })
 }
 
@@ -120,31 +133,31 @@ function submitForm(evt)
 function submitEditForm(evt)
 {
     evt.preventDefault()
-
-    // let formData = {
-    //     rating: evt.target.rating.value,
-    //     comment: evt.target['new-comment'].value
-    // }
+    console.log(evt)
+    let formData = {
+        rating: evt.target.updateRating.value,
+        comment: evt.target.updateComment.value
+    }
 
     console.log(evt.target.updateRating.value)
     console.log(evt.target.updateComment.value)
 
-    // fetch(`${url}/${id}`, {
-    //     method: 'PATCH',
-    //     headers: {
-    //         "Content-type": 'application/json',
-    //         "Accept": 'application/json'
-    //     },
-    //     body: JSON.stringify(formData)
-    // })
-    //     .then(function (res)
-    //     {
-    //         return res.json()
-    //     })
-    //     .then(function (data)
-    //     {
-    //         renderData(data)
-    //     })
+    fetch(`${url}/${currentRamen}`, {
+        method: 'PATCH',
+        headers: {
+            "Content-type": 'application/json',
+            "Accept": 'application/json'
+        },
+        body: JSON.stringify(formData)
+    })
+        .then(function (res)
+        {
+            return res.json()
+        })
+        .then(function (data)
+        {
+            renderData(data)
+        })
 }
 
 

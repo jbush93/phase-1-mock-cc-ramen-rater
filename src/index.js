@@ -164,7 +164,7 @@ function submitEditForm(evt)
 document.addEventListener('DOMContentLoaded', function (evt)
 {
     evt.preventDefault()
-    console.log('loaded!')
+    console.log('loaded')
 
     fetchAll()
     form.addEventListener('submit', submitForm)
